@@ -1,0 +1,96 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum OnsideStatus {
+  REQUESTED
+  APPROVED
+  REJECTED
+}
+enum OnsitePurpose {
+  PENGIRIMAN_BARANG
+  MEETING
+  SURVEY
+  DOKUMENTASI
+}
+
+model User {
+  id           String   @id @default(cuid())
+  name         String  
+  email        String   @unique
+  password     String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  onsiteRequests OnsiteRequest[] @relation("UserOnsiteRequests")
+
+}
+
+model Customer {
+  id          String   @id @default(cuid())
+  name         String
+  phone     String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  quotes Quote[]
+}
+
+model Quote {
+  id String @id @default(cuid())
+  quoteNo String @unique
+  customerId String
+  customer Customer @relation(fields: [customerId], references: [id])
+  items QuoteItem[]
+   createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+    onsiteRequests OnsiteRequest[]
+
+  @@index([customerId ])
+}
+
+model QuoteItem {
+  id        String @id @default(cuid())
+  quoteId   String
+  quote     Quote  @relation(fields: [quoteId], references: [id], onDelete: Cascade)
+  name      String
+  qty       Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([quoteId])
+}
+model OnsiteRequest {
+  id String @id @default(cuid())
+  requestedById String
+  requestedBy User @relation("UserOnsiteRequests", fields: [requestedById], references: [id], onDelete: Restrict)
+  purpose OnsitePurpose
+  onsiteAt DateTime
+  address String
+  status OnsideStatus @default(REQUESTED)
+  quoteId String
+  quote Quote @relation(fields: [quoteId], references: [id], onDelete: Restrict)
+  items OnsideRequestItem[]
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([requestedById])
+  @@index([quoteId])
+  @@index([status])
+  @@index([createdAt])
+}
+
+model OnsideRequestItem {
+  id String @id @default(cuid())
+  requestId String
+  request   OnsiteRequest @relation(fields: [requestId], references: [id], onDelete: Cascade)
+
+  name      String
+  qty       Int
+
+  @@index([requestId])
+}

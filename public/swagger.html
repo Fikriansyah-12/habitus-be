@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Habitus API - Swagger Documentation</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swagger-ui-dist@3/swagger-ui.css">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #fafafa;
+        }
+        .topbar {
+            background-color: #1e90ff;
+            padding: 20px;
+            text-align: center;
+            color: white;
+        }
+        .topbar h1 {
+            margin: 0;
+            font-size: 28px;
+        }
+        .topbar p {
+            margin: 5px 0 0 0;
+            font-size: 14px;
+            opacity: 0.9;
+        }
+    </style>
+</head>
+<body>
+    <div class="topbar">
+        <h1>📚 Habitus API Documentation</h1>
+        <p>Dashboard Request Jadwal Operasional - v1.0.0</p>
+    </div>
+    <div id="swagger-ui"></div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/swagger-ui-dist@3/swagger-ui.js"></script>
+    <script>
+        SwaggerUIBundle({
+            url: "/api/v1/docs-json",
+            dom_id: '#swagger-ui',
+            presets: [
+                SwaggerUIBundle.presets.apis,
+                SwaggerUIBundle.SwaggerUIStandalonePreset
+            ],
+            layout: "BaseLayout",
+            deepLinking: true
+        })
+    </script>
+</body>
+</html>
