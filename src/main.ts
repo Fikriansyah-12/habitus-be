@@ -13,18 +13,13 @@ async function bootstrap() {
 
   const allowedOrigins = [
     'http://localhost:5173',
-    'https://habitus-fe.vercel.app/'
+    'http://localhost:3000',
+    'http://localhost:8080',
+    'https://habitus-fe.vercel.app',
   ];
 
   app.enableCors({
-    origin: isDevelopment ? true : (origin, callback) => {
-      // allow server-to-server / curl (origin undefined)
-      if (!origin) return callback(null, true);
-
-      if (allowedOrigins.includes(origin)) return callback(null, true);
-
-      return callback(new Error(`CORS blocked for origin: ${origin}`), false);
-    },
+    origin: allowedOrigins,
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
