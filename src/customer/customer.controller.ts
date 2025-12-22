@@ -7,17 +7,22 @@ import {
   Param,
   Delete,
   UseGuards,
+  Response,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiBearerAuth, ApiParam } from '@nestjs/swagger';
 import { JwtGuard } from '../auth/guards/jwt.guard';
 import { CustomerService } from './customer.service';
+import { ExportService } from '../export/export.service';
 
 @ApiTags('Customers')
 @ApiBearerAuth('jwt')
 @Controller('customers')
 @UseGuards(JwtGuard)
 export class CustomerController {
-  constructor(private readonly customerService: CustomerService) {}
+  constructor(
+    private readonly customerService: CustomerService,
+    private readonly exportService: ExportService,
+  ) {}
 
   @ApiOperation({
     summary: 'Buat customer baru',
@@ -63,6 +68,22 @@ export class CustomerController {
   @Patch(':id')
   update(@Param('id') id: string, @Body() data: Partial<{ name: string; phone: string }>) {
     return this.customerService.update(id, data);
+  }
+
+  @ApiOperation({
+    summary: 'Export customers ke Excel',
+    description: 'Download semua customers dalam format Excel',
+  })
+  @Get('export/excel')
+  async exportToExcel(@Response() res: any) {
+    const customers = await this.customerService.findAll();
+    const customersData = this.exportService.formatCustomersForExport(customers);
+
+    const buffer = this.exportService.generateExcelBuffer(customersData, 'Customers');
+
+    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    res.setHeader('Content-Disposition', 'attachment; filename=customers.xlsx');
+    res.end(buffer);
   }
 
   @ApiOperation({

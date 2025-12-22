@@ -18,6 +18,14 @@ enum OnsitePurpose {
   SURVEY
   DOKUMENTASI
 }
+enum OnsiteRequestLogAction {
+  CREATED
+  STATUS_CHANGED
+  ITEMS_UPDATED
+  ADDRESS_UPDATED
+  SCHEDULE_CHANGED
+  CANCELLED
+}
 
 model User {
   id           String   @id @default(cuid())
@@ -27,7 +35,7 @@ model User {
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
   onsiteRequests OnsiteRequest[] @relation("UserOnsiteRequests")
-
+  logs OnsiteRequestLog[] @relation("UserLogs")
 }
 
 model Customer {
@@ -74,6 +82,7 @@ model OnsiteRequest {
   quoteId String
   quote Quote @relation(fields: [quoteId], references: [id], onDelete: Restrict)
   items OnsideRequestItem[]
+  logs OnsiteRequestLog[]
 
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
@@ -93,4 +102,23 @@ model OnsideRequestItem {
   qty       Int
 
   @@index([requestId])
+}
+
+model OnsiteRequestLog {
+  id String @id @default(cuid())
+  requestId String
+  request OnsiteRequest @relation(fields: [requestId], references: [id], onDelete: Cascade)
+  action OnsiteRequestLogAction
+  oldStatus OnsideStatus?
+  newStatus OnsideStatus?
+  changedById String
+  changedBy User @relation("UserLogs", fields: [changedById], references: [id], onDelete: Restrict)
+  description String
+  metadata Json?
+  timestamp DateTime @default(now())
+
+  @@index([requestId])
+  @@index([changedById])
+  @@index([action])
+  @@index([timestamp])
 }

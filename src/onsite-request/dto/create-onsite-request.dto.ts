@@ -71,11 +71,19 @@ export class UpdateOnsiteRequestStatusDto {
   @ApiProperty({
     enum: OnsideStatus,
     example: 'APPROVED',
-    description: 'Status baru (REQUESTED, APPROVED, REJECTED)',
+    description: 'Status baru (APPROVED, REJECTED)',
   })
   @IsEnum(OnsideStatus)
   @IsNotEmpty()
   status: OnsideStatus;
+
+  @ApiProperty({
+    nullable: true,
+    description: 'Metadata tambahan (misal: reason, approvedBy, dll)',
+    required: false,
+  })
+  @IsOptional()
+  metadata?: Record<string, any>;
 }
 
 export class UpdateOnsiteRequestDto {

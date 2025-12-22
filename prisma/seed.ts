@@ -215,6 +215,65 @@ async function main() {
     console.log(`✅ Onsite request "${request.id}" created (Status: ${request.status})`);
   }
 
+  const logs = [
+    {
+      id: 'log-001',
+      requestId: 'onsite-001',
+      action: 'CREATED',
+      changedById: 'user-tommy-001',
+      description: 'Onsite request dibuat untuk quote 001',
+      metadata: {
+        purpose: OnsitePurpose.PENGIRIMAN_BARANG,
+        location: 'Jl. Merdeka No. 123, Jakarta',
+      },
+    },
+    {
+      id: 'log-002',
+      requestId: 'onsite-002',
+      action: 'CREATED',
+      changedById: 'user-gina-001',
+      description: 'Onsite request dibuat untuk quote 002',
+      metadata: {
+        purpose: OnsitePurpose.MEETING,
+        location: 'Jl. Sudirman No. 456, Bandung',
+      },
+    },
+    {
+      id: 'log-003',
+      requestId: 'onsite-002',
+      action: 'STATUS_CHANGED',
+      oldStatus: OnsideStatus.REQUESTED,
+      newStatus: OnsideStatus.APPROVED,
+      changedById: 'user-gina-001',
+      description: 'Status diubah dari REQUESTED menjadi APPROVED',
+      metadata: {
+        approvedAt: new Date('2025-12-21T09:30:00'),
+      },
+    },
+    {
+      id: 'log-004',
+      requestId: 'onsite-003',
+      action: 'CREATED',
+      changedById: 'user-tommy-001',
+      description: 'Onsite request dibuat untuk quote 003',
+      metadata: {
+        purpose: OnsitePurpose.SURVEY,
+        location: 'Jl. Ahmad Yani No. 789, Surabaya',
+      },
+    },
+  ];
+
+  console.log('\n📝 Creating activity logs...');
+  for (const logData of logs) {
+    const log = await (prisma as any).onsiteRequestLog.upsert({
+      where: { id: logData.id },
+      update: {},
+      create: logData,
+    });
+
+    console.log(`✅ Log "${log.action}" created for request ${log.requestId}`);
+  }
+
   console.log('\n✨ Seed completed successfully!');
 }
 

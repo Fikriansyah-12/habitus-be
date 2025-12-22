@@ -7,17 +7,24 @@ import {
   Param,
   Delete,
   UseGuards,
+  Response,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiBearerAuth, ApiParam } from '@nestjs/swagger';
 import { JwtGuard } from '../auth/guards/jwt.guard';
-import { QuoteService, CreateQuoteDto, UpdateQuoteDto } from './quote.service';
+import { QuoteService } from './quote.service';
+import { CreateQuoteDto } from './dto/create-quote.dto';
+import { UpdateQuoteDto } from './dto/update-quote.dto';
+import { ExportService } from '../export/export.service';
 
 @ApiTags('Quotes')
 @ApiBearerAuth('jwt')
 @Controller('quotes')
 @UseGuards(JwtGuard)
 export class QuoteController {
-  constructor(private readonly quoteService: QuoteService) {}
+  constructor(
+    private readonly quoteService: QuoteService,
+    private readonly exportService: ExportService,
+  ) {}
 
   @ApiOperation({
     summary: 'Buat quote baru',
@@ -77,6 +84,27 @@ export class QuoteController {
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateQuoteDto: UpdateQuoteDto) {
     return this.quoteService.update(id, updateQuoteDto);
+  }
+
+  @ApiOperation({
+    summary: 'Export quotes ke Excel',
+    description: 'Download semua quotes dalam format Excel',
+  })
+  @Get('export/excel')
+  async exportToExcel(@Response() res: any) {
+    const quotes = await this.quoteService.findAll();
+
+    const quotesData = this.exportService.formatQuotesForExport(quotes);
+    const itemsData = this.exportService.formatQuoteItemsForExport(quotes);
+
+    const buffer = this.exportService.generateExcelBufferMultipleSheets([
+      { name: 'Quotes', data: quotesData },
+      { name: 'Items', data: itemsData },
+    ]);
+
+    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    res.setHeader('Content-Disposition', 'attachment; filename=quotes.xlsx');
+    res.end(buffer);
   }
 
   @ApiOperation({

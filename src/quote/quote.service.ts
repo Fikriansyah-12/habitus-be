@@ -1,17 +1,7 @@
 import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { PrismaClient } from '@prisma/client';
-
-export class CreateQuoteDto {
-  quoteNo: string;
-  customerId: string;
-  items?: Array<{ name: string; qty: number }>;
-}
-
-export class UpdateQuoteDto {
-  quoteNo?: string;
-  customerId?: string;
-  items?: Array<{ name: string; qty: number }>;
-}
+import { CreateQuoteDto } from './dto/create-quote.dto';
+import { UpdateQuoteDto } from './dto/update-quote.dto';
 
 @Injectable()
 export class QuoteService {
