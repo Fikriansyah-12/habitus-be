@@ -13,11 +13,7 @@ async function bootstrap() {
 
   const allowedOrigins = [
     'http://localhost:5173',
-    'http://localhost:3000',
-    'http://localhost:8080',
-    // contoh kalau FE deploy:
-    // 'https://your-frontend.netlify.app',
-    // 'https://your-frontend.vercel.app',
+    'https://habitus-fe.vercel.app/'
   ];
 
   app.enableCors({
