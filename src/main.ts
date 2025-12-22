@@ -9,16 +9,19 @@ import { join } from 'path';
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
+  const isDevelopment = process.env.NODE_ENV !== 'production';
 
   const allowedOrigins = [
     'http://localhost:5173',
+    'http://localhost:3000',
+    'http://localhost:8080',
     // contoh kalau FE deploy:
     // 'https://your-frontend.netlify.app',
     // 'https://your-frontend.vercel.app',
   ];
 
   app.enableCors({
-    origin: (origin, callback) => {
+    origin: isDevelopment ? true : (origin, callback) => {
       // allow server-to-server / curl (origin undefined)
       if (!origin) return callback(null, true);
 
